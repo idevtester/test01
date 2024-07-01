@@ -1,0 +1,43 @@
+name: Set up RDP with Serveo
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - name: Set up RDP and Serveo
+      run: |
+        # Enable RDP and allow it through the firewall
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        
+        # Set the password for runneradmin
+        $password = ConvertTo-SecureString "ComplexP@ssw0rd2024!" -AsPlainText -Force
+        Set-LocalUser -Name "runneradmin" -Password $password
+        
+        # Install OpenSSH client
+        Add-WindowsCapability -Online -Name OpenSSH.Client*
+        
+        # Start Serveo SSH tunnel
+        ssh -o "StrictHostKeyChecking no" -R chakka:3389:localhost:3389 serveo.net > serveo_output.txt 2>&1 &
+        Start-Sleep -Seconds 10
+        
+        # Print the full serveo_output.txt contents for debugging
+        Get-Content serveo_output.txt
+        
+        # Get the Serveo URL
+        $serveoUrl = (Select-String -Path serveo_output.txt -Pattern "Forwarding TCP traffic from [^ ]+" | Select-Object -First 1).Line
+        if ($serveoUrl) {
+          $serveoUrl = $serveoUrl -replace ".*Forwarding TCP traffic from ", ""
+        } else {
+          $serveoUrl = "No Serveo URL found"
+        }
+        
+        # Save the Serveo URL to a file
+        echo "RDP Connection URL: $serveoUrl" | Out-File -FilePath rdp_connection.txt
+
+    - name: Print RDP Connection URL
+      run: type rdp_connection.txt
