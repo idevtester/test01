@@ -32,7 +32,7 @@ jobs:
 
     - name: Authenticate with LocalXpose
       run: |
-        .\loclx.exe account login [0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB]
+        .\loclx.exe account login 0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB
 
     - name: Create RDP tunnel with LocalXpose
       run: |
