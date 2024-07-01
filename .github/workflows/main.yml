@@ -12,7 +12,7 @@ jobs:
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
-        
+
     - name: Set password for runneradmin
       run: |
         $password = ConvertTo-SecureString "ComplexP@ssw0rd2024!" -AsPlainText -Force
@@ -29,29 +29,27 @@ jobs:
 
         while (-not $connected -and $attempt -lt $maxAttempts) {
           $attempt++
-          Write-Host "Attempt $attempt to connect to Serveo"
+          Write-Host "Attempt $($attempt) to connect to Serveo"
           ssh -o "StrictHostKeyChecking no" -R chakka:3389:localhost:3389 serveo.net > serveo_output.txt 2>&1 &
           Start-Sleep -Seconds 10
-          $serveoUrl = (Select-String -Path serveo_output.txt -Pattern "Forwarding TCP traffic from [^ ]+" | Select-Object -First 1).Line
+
+          $serveoUrl = (Select-String -Path serveo_output.txt -Pattern "Forwarding TCP traffic from [^ ]+").Line
           if ($serveoUrl) {
             $connected = $true
-            Write-Host "Connected to Serveo"
+            Write-Host "Connected to Serveo. RDP Connection URL: $serveoUrl"
+            echo "RDP Connection URL: $serveoUrl" | Out-File -FilePath rdp_connection.txt
           } else {
             Write-Host "Connection to Serveo failed, retrying..."
           }
         }
 
-        if ($connected) {
-          $serveoUrl = $serveoUrl -replace ".*Forwarding TCP traffic from ", ""
-          Write-Host "RDP Connection URL: $serveoUrl"
-          echo "RDP Connection URL: $serveoUrl" | Out-File -FilePath rdp_connection.txt
-        } else {
+        if (!$connected) {
           Write-Host "Failed to connect to Serveo after $maxAttempts attempts"
           echo "Failed to connect to Serveo" | Out-File -FilePath rdp_connection.txt
-        }
+        }  
 
-    - name: Print Serveo output for debugging
-      run: Get-Content serveo_output.txt
+      - name: Print Serveo output for debugging
+        run: Get-Content serveo_output.txt
 
     - name: Print RDP Connection URL
       run: type rdp_connection.txt
