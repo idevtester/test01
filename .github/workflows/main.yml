@@ -32,7 +32,7 @@ jobs:
 
     - name: Authenticate with LocalXpose
       run: |
-        loclx account login 
+        loclx account login 0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB
 
     - name: Create RDP tunnel with LocalXpose
       run: |
@@ -41,7 +41,7 @@ jobs:
 
     - name: Retrieve and print LocalXpose tunnel URL
       run: |
-        $tunnelInfo = .\loclx.exe tunnels
+        $tunnelInfo = loclx tunnels
         $tunnelUrl = $tunnelInfo | Select-String -Pattern "https://.*"
         if ($tunnelUrl) {
           Write-Host "RDP Connection URL: $tunnelUrl"
