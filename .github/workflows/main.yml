@@ -32,10 +32,12 @@ jobs:
 
     - name: Authenticate with LocalXpose
       run: |
-        $token = @"
-        0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB
-        "@
-        $token | loclx account login
+        $scriptBlock = {
+            param($token)
+            loclx account login $token
+        }
+        $token = "0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB"
+        Invoke-Command -ScriptBlock $scriptBlock -ArgumentList $token
 
     - name: Create RDP tunnel with LocalXpose
       run: |
