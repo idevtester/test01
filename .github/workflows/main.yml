@@ -32,8 +32,10 @@ jobs:
 
     - name: Authenticate with LocalXpose
       run: |
-        echo "0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB" | loclx account login
-        #loclx account login 0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB
+        $token = @"
+        0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB
+        "@
+        $token | loclx account login
 
     - name: Create RDP tunnel with LocalXpose
       run: |
