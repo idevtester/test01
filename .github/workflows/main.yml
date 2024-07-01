@@ -29,16 +29,16 @@ jobs:
 
     - name: Authenticate with LocalXpose
       run: |
-        .\lxz.exe authtoken [YOUR_LOCALXPOSE_AUTH_TOKEN]
+        .\loclx.exe account login [YOUR_LOCALXPOSE_AUTH_TOKEN]
 
     - name: Create RDP tunnel with LocalXpose
       run: |
-        Start-Process -FilePath "lxz.exe" -ArgumentList "tcp 3389" -NoNewWindow -PassThru
+        Start-Process -FilePath "loclx.exe" -ArgumentList "tunnel tcp --to localhost:3389" -NoNewWindow -PassThru
         Start-Sleep -Seconds 10
 
     - name: Retrieve and print LocalXpose tunnel URL
       run: |
-        $tunnelInfo = .\lxz.exe tunnels
+        $tunnelInfo = .\loclx.exe tunnels
         $tunnelUrl = $tunnelInfo | Select-String -Pattern "https://.*"
         if ($tunnelUrl) {
           Write-Host "RDP Connection URL: $tunnelUrl"
