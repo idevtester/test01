@@ -32,7 +32,46 @@ jobs:
 
     - name: Authenticate with LocalXpose
       run: |
-        "0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB" | loclx account login
+        # Define the access token
+        $accessToken = "0ndwTzUcWCwXuND835Y35ZvqHUbEgriizjpaUCvB"
+
+        # Create a temporary file to hold the access token
+        $tempFile = [System.IO.Path]::GetTempFileName()
+        Set-Content -Path $tempFile -Value $accessToken
+
+        # Display the temporary file path (for debugging purposes)
+        Write-Host "Temporary file created at: $tempFile"
+
+        # Set up the ProcessStartInfo to handle input redirection
+        $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $processInfo.FileName = "loclx.exe"
+        $processInfo.Arguments = "account login"
+        $processInfo.RedirectStandardInput = $true
+        $processInfo.UseShellExecute = $false
+        $processInfo.CreateNoWindow = $true
+
+        # Start the process
+        $process = [System.Diagnostics.Process]::Start($processInfo)
+
+        # Write the access token to the process's standard input
+        $process.StandardInput.WriteLine($accessToken)
+        $process.StandardInput.Close()
+
+        # Wait for the process to exit
+        $process.WaitForExit()
+
+        # Check the exit code and output
+        if ($process.ExitCode -eq 0) {
+            Write-Host "Logged in successfully."
+        } else {
+            Write-Host "Failed to log in."
+        }
+
+        # Remove the temporary file
+        Remove-Item -Path $tempFile
+
+        # Confirm the temporary file has been deleted
+        Write-Host "Temporary file deleted: $tempFile"
 
     - name: Create RDP tunnel with LocalXpose
       run: |
