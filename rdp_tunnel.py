@@ -26,7 +26,7 @@ def start_tunnel(server_ip, server_port, local_ip, local_port, protocol):
     elif protocol.upper() == 'UDP':
         local_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    local_socket.connect((local_ip, local_port))
+    local_socket.bind((local_ip, local_port))
 
     threading.Thread(target=forward_traffic, args=(server_socket, local_socket)).start()
     threading.Thread(target=forward_traffic, args=(local_socket, server_socket)).start()
