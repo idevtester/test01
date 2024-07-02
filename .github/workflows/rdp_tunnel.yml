@@ -22,15 +22,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # If you have any dependencies, install them here
-        # pip install -r requirements.txt
 
     - name: Run RDP Tunnel Script
       run: |
-        python rdp_tunnel.py SERVER_IP SERVER_PORT LOCAL_IP LOCAL_PORT PROTOCOL
+        python rdp_tunnel.py ${{ secrets.SERVER_IP }} ${{ secrets.SERVER_PORT }} localhost 3389 TCP
       env:
         SERVER_IP: ${{ secrets.SERVER_IP }}
         SERVER_PORT: ${{ secrets.SERVER_PORT }}
-        LOCAL_IP: localhost
-        LOCAL_PORT: 3389
-        PROTOCOL: TCP
