@@ -1,4 +1,4 @@
-name: RDP Tunnel Setup
+name: RDP Tunnel Setup with PageKite
 
 on:
   push:
@@ -19,13 +19,17 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
+    - name: Install PageKite
       run: |
-        python -m pip install --upgrade pip
+        sudo apt-get update
+        sudo apt-get install -y pagekite
 
-    - name: Run RDP Tunnel Script
+    - name: Configure and Run PageKite
       run: |
-        python rdp_tunnel.py ${{ secrets.SERVER_IP }} ${{ secrets.SERVER_PORT }} localhost 3389 TCP
+        pagekite.py 3389 ${KITE_NAME}.pagekite.me:3389
       env:
-        SERVER_IP: ${{ secrets.SERVER_IP }}
-        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        KITE_NAME: ${{ secrets.KITE_NAME }}
+        KITE_SECRET: ${{ secrets.KITE_SECRET }}
+
+    - name: Keep Workflow Running
+      run: sleep infinity
