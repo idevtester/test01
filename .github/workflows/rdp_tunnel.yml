@@ -25,10 +25,7 @@ jobs:
 
     - name: Run PageKite
       run: |
-        python pagekite.py 3389 ${env:KITE_NAME}.pagekite.me:3389 ${env:KITE_SECRET}
-      env:
-        KITE_NAME: ${{ secrets.KITE_NAME }}
-        KITE_SECRET: ${{ secrets.KITE_SECRET }}
+        python pagekite.py 3389 ${{ secrets.KITE_NAME }}.pagekite.me:3389 ${{ secrets.KITE_SECRET }}
 
     - name: Keep Workflow Running
       run: |
