@@ -8,7 +8,7 @@ on:
 
 jobs:
   setup-rdp-tunnel:
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
 
     steps:
     - name: Checkout repository
@@ -21,15 +21,15 @@ jobs:
 
     - name: Install PageKite
       run: |
-        sudo apt-get update
-        sudo apt-get install -y pagekite
+        pip install pagekite
 
     - name: Configure and Run PageKite
       run: |
-        pagekite.py 3389 ${KITE_NAME}.pagekite.me:3389
+        pagekite.py 3389 ${env:KITE_NAME}.pagekite.me:3389
       env:
         KITE_NAME: ${{ secrets.KITE_NAME }}
         KITE_SECRET: ${{ secrets.KITE_SECRET }}
 
     - name: Keep Workflow Running
-      run: sleep infinity
+      run: |
+        timeout /t -1
