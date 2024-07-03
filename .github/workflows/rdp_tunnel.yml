@@ -14,18 +14,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Download PageKite Script
+      run: |
+        curl -O https://pagekite.net/pk/pagekite.py
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: Install PageKite
+    - name: Run PageKite
       run: |
-        pip install pagekite
-
-    - name: Configure and Run PageKite
-      run: |
-        pagekite.py 3389 ${env:KITE_NAME}.pagekite.me:3389
+        python pagekite.py 3389 ${env:KITE_NAME}.pagekite.me:3389 ${env:KITE_SECRET}
       env:
         KITE_NAME: ${{ secrets.KITE_NAME }}
         KITE_SECRET: ${{ secrets.KITE_SECRET }}
